@@ -1,9 +1,10 @@
 <template>
-    <div class="code-block mb-3" @mouseover="hoverCode" @mouseleave="isHoveringCode = false">
-        <div class="language" v-if="language && showLang">
+    <div class="code-block d-flex" @mouseover="hoverCode" @mouseleave="isHoveringCode = false">
+        <div class="flex-grow-1" style="{font-size: .875rem}" v-html="codeData" />
+        <div class="language" v-if="language">
             {{ language }}
         </div>
-        <template v-if="isHoveringCode && copyable">
+        <template v-if="isHoveringCode">
             <button ref="copyButton" class="copy">
                 <component
                     :is="copyIcon"
@@ -15,12 +16,11 @@
                 <div id="arrow" data-popper-arrow />
             </div>
         </template>
-        <div style="{font-size: .875rem}" v-html="codeData" />
     </div>
 </template>
 
 <script setup lang="ts">
-    import {nextTick, ref} from "vue";
+    import {nextTick, ref, shallowRef} from "vue";
     import {createPopper} from "@popperjs/core";
     import ContentCopy from "vue-material-design-icons/ContentCopy.vue";
     import Check from "vue-material-design-icons/Check.vue";
@@ -38,8 +38,6 @@
             filename?: string | null
             highlights?: string[]
             meta?: string | null
-            showLang?: boolean
-            copyable?: boolean
         }>(), {
             code: "",
             language: null,
@@ -50,7 +48,7 @@
 
     const isHoveringCode = ref(false)
     const copyIconResetTimer = ref()
-    const copyIcon = ref(icons.ContentCopy)
+    const copyIcon = shallowRef(icons.ContentCopy)
     const copyButton = ref<HTMLButtonElement>()
     const copyTooltip = ref<HTMLDivElement>()
 
@@ -88,23 +86,18 @@
 
 <style lang="scss" scoped>
     .code-block {
-        background-color: #161617;
-        border: 1px solid #252526;
-        padding: 1.25rem 1.5rem;
+        padding: 1.25rem;
         border-radius: var(--bs-border-radius-lg);
-        color: var(--bs-white);
         position: relative;
 
         .language {
-            position: absolute;
-            right: 0.35rem;
-            top: 0.25rem;
-            color: var(--bs-gray-600);
             font-size: 0.75rem;
         }
 
         :deep(pre) {
             margin-bottom: 0;
+            padding: 0;
+            border: 0 !important;
         }
 
         :deep(.github-dark) {
